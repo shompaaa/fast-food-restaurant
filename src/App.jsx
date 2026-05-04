@@ -1,6 +1,8 @@
 import { FaHome } from "react-icons/fa";
 import "./App.css";
 import { useEffect, useState } from "react";
+import axios from "axios";
+import { resume } from "react-dom/server";
 
 function App() {
   // Food Items JSON Array of Object
@@ -208,7 +210,8 @@ function App() {
   ];
 
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [users,setUsers]= useState([])
+  const [users, setUsers] = useState([]);
+  const [posts, setPosts] = useState([]);
 
   const filterFoodItems =
     selectedCategory === "all"
@@ -218,16 +221,24 @@ function App() {
             item.category.toLowerCase() === selectedCategory.toLowerCase(),
         );
 
-  
-        useEffect(()=>{
-         const fetchUsers = async()=>{
-          const res = await fetch('https://jsonplaceholder.typicode.com/users')
-          const data = await res.json()
-          setUsers(data)
-         }
-         fetchUsers()
-        },[])
+  //Fetch Data Using Browser Built-in fetch method:
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const res = await fetch("https://jsonplaceholder.typicode.com/users");
+      const data = await res.json();
+      setUsers(data);
+    };
+    fetchUsers();
+  }, []);
 
+  //Fetch Data Using Axios:
+  useEffect(() => {
+    const fetchPosts = async() => {
+      const res = await axios.get("https://jsonplaceholder.typicode.com/posts")
+     setPosts(res.data)
+    };
+    fetchPosts()
+  }, []);
 
   return (
     <div className="App">
@@ -273,16 +284,35 @@ function App() {
           ))}
         </div>
       </div>
-       <div className="container">
+      {/* Show User */}
+      <div className="container">
         <h1 className="text-center">Showing User List by Fetching Data</h1>
         <div className="row g-3 my-3">
           {users.map((user) => (
             <div key={user.id} className="col-6 col-md-4 col-lg-2">
               <div
-                className="bg-secondary p-3 rounded text-white text-center fs-6 fw-bold"
+                className="bg-info p-3 rounded text-white text-center fs-6 fw-bold"
                 style={{ height: "150px" }}
               >
                 {user.name.toUpperCase()}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Show Post */}
+      <div className="container">
+        <h1 className="text-center">
+          Showing Post by Fetching Data with Axios
+        </h1>
+        <div className="row g-3 my-3">
+          {posts.map((post) => (
+            <div key={post.id} className="col-6 col-md-4 col-lg-2">
+              <div
+                className="bg-warning p-3 rounded text-white text-center fs-6 fw-bold"
+                style={{ height: "150px" }}
+              >
+                {post.title}
               </div>
             </div>
           ))}
