@@ -1,10 +1,9 @@
 import { FaHome } from "react-icons/fa";
 import "./App.css";
-import { useState } from "react";
-import { data } from "react-router";
+import { useEffect, useState } from "react";
 
 function App() {
-  // Food Items JSON
+  // Food Items JSON Array of Object
   const foodItems = [
     {
       id: 1,
@@ -156,39 +155,39 @@ function App() {
       name: "Oven Pasta",
       category: "snacks",
     },
-      {
+    {
       id: 31,
       name: "Mint Juice",
       category: "juice",
     },
-      {
+    {
       id: 32,
       name: "Cheese Cake",
       category: "cake",
     },
-      {
+    {
       id: 33,
       name: "Mango Juice",
       category: "juice",
     },
-      {
+    {
       id: 34,
       name: "Red Velvet",
       category: "cake",
     },
-      {
+    {
       id: 35,
       name: "Orange Juice",
       category: "juice",
     },
-      {
+    {
       id: 36,
       name: "Chocolate Cake",
       category: "cake",
     },
   ];
 
-  //Category JSON
+  //Category JSON Array of Object
   const categories = [
     {
       id: 1,
@@ -208,9 +207,26 @@ function App() {
     },
   ];
 
-  const [selectedCategory, setSelectedCategory] = useState("all")
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [users,setUsers]= useState([])
 
-  const filterFoodItems = selectedCategory === 'all' ? foodItems : foodItems.filter(item => item.category.toLowerCase() === selectedCategory.toLowerCase())
+  const filterFoodItems =
+    selectedCategory === "all"
+      ? foodItems
+      : foodItems.filter(
+          (item) =>
+            item.category.toLowerCase() === selectedCategory.toLowerCase(),
+        );
+
+  
+        useEffect(()=>{
+         const fetchUsers = async()=>{
+          const res = await fetch('https://jsonplaceholder.typicode.com/users')
+          const data = await res.json()
+          setUsers(data)
+         }
+         fetchUsers()
+        },[])
 
 
   return (
@@ -218,9 +234,17 @@ function App() {
       {/* Category Item */}
       <div className="text-center mt-4 ">
         <div className="d-flex justify-content-center">
-          <FaHome onClick={()=>setSelectedCategory('all')} size={27} className="me-3" />
+          <FaHome
+            onClick={() => setSelectedCategory("all")}
+            size={27}
+            className="me-3"
+          />
           {categories.map((category) => (
-            <p onClick={()=>setSelectedCategory(category.name)} key={category.id} className="me-2 px-2 py-1 rounded fw-bold bg-light">
+            <p
+              onClick={() => setSelectedCategory(category.name)}
+              key={category.id}
+              className="me-2 px-2 py-1 rounded fw-bold bg-light"
+            >
               {category.name.toUpperCase()}
             </p>
           ))}
@@ -249,10 +273,23 @@ function App() {
           ))}
         </div>
       </div>
+       <div className="container">
+        <h1 className="text-center">Showing User List by Fetching Data</h1>
+        <div className="row g-3 my-3">
+          {users.map((user) => (
+            <div key={user.id} className="col-6 col-md-4 col-lg-2">
+              <div
+                className="bg-secondary p-3 rounded text-white text-center fs-6 fw-bold"
+                style={{ height: "150px" }}
+              >
+                {user.name.toUpperCase()}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
-
-
 
 export default App;
